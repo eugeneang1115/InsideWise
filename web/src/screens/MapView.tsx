@@ -35,7 +35,7 @@ export function MapView({ companies, selectedId, onSelect, onSearchArea, resetSi
     const m = L.map(el.current!, { zoomControl: false, attributionControl: false, minZoom: 5, maxZoom: 18, maxBounds: MALAYSIA.pad(0.3) })
       .setView([3.139, 101.668], 11);
     L.control.attribution({ prefix: false, position: 'bottomright' }).addAttribution(TILE_ATTRIBUTION).addTo(m);
-    L.tileLayer(TILE_URL, { maxZoom: 19, className: 'tile' })
+    L.tileLayer(TILE_URL, { maxZoom: 19, className: 'tile', referrerPolicy: 'strict-origin-when-cross-origin' })
       .on('tileerror', () => setTileError(true))
       .on('tileload', () => setTileError(false))
       .addTo(m);

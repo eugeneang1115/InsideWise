@@ -54,7 +54,8 @@ export async function buildApp(db: Db, config: Config, opts: { logger?: boolean 
 
   app.addHook('onSend', async (req, reply) => {
     reply.header('X-Content-Type-Options', 'nosniff');
-    reply.header('Referrer-Policy', 'same-origin');
+    // OpenStreetMap refuses tile requests without a Referer, so cross-origin requests send the origin (never the path).
+    reply.header('Referrer-Policy', 'strict-origin-when-cross-origin');
     if (req.url.startsWith('/api/')) reply.header('Cache-Control', 'no-store');
   });
 
