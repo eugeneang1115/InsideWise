@@ -59,8 +59,8 @@ npm run android:open                                          # open in Android 
 ```
 
 The app calls the API at `VITE_API_URL` with a bearer token kept on the device; the web app uses an
-httpOnly session cookie with CSRF protection. Add the API's public origin to nothing: the Android
-WebView origin `https://localhost` is already in the default `CORS_ORIGINS`.
+httpOnly session cookie with CSRF protection. The Android WebView's origin, `https://localhost`, is
+already in the default `CORS_ORIGINS`, so the API accepts its requests without extra setup.
 
 CI builds `app-debug.apk` as a downloadable artifact when the `API_URL` repository variable is set.
 A signed release build needs a keystore and a Play Console listing; see `docs/DECISIONS.md`.
