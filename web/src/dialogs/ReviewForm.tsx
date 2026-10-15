@@ -3,7 +3,7 @@ import { api, type Company, type OwnReview, type ReviewInput } from '../api';
 import { errorText, useApp } from '../context';
 import { LANGS, METRICS } from '../i18n';
 
-const DRAFT_KEY = 'ki-review-draft';
+const DRAFT_KEY = 'iw-review-draft';
 const PERSONAL = [/[\w.+-]+@[\w-]+(\.[\w-]+)+/i, /\b\d{6}[- ]?\d{2}[- ]?\d{4}\b/, /(\+?6?0)[- ]?1\d[- ]?\d{3,4}[- ]?\d{4}\b/];
 
 type Draft = Record<string, string>;

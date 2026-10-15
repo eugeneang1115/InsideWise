@@ -24,7 +24,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   return {
     port: Number(env.PORT ?? 8787),
     host: env.HOST ?? '0.0.0.0',
-    databaseUrl: env.DATABASE_URL ?? 'postgres://postgres@127.0.0.1:5432/kerjainside',
+    databaseUrl: env.DATABASE_URL ?? 'postgres://postgres@127.0.0.1:5432/insidewise',
     corsOrigins: list(env.CORS_ORIGINS ?? 'http://localhost:5173,https://localhost,capacitor://localhost'),
     moderatorEmails: new Set(list(env.MODERATOR_EMAILS).map((e) => e.toLowerCase())),
     secureCookies: env.SECURE_COOKIES ? env.SECURE_COOKIES === 'true' : production,

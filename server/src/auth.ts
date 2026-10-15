@@ -18,8 +18,8 @@ declare module 'fastify' {
   }
 }
 
-export const SESSION_COOKIE = 'ki_session';
-export const CSRF_COOKIE = 'ki_csrf';
+export const SESSION_COOKIE = 'iw_session';
+export const CSRF_COOKIE = 'iw_csrf';
 const UNSAFE = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 
 export function registerAuth(app: FastifyInstance, db: Db, config: Config) {

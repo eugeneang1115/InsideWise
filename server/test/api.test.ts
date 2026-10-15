@@ -62,7 +62,7 @@ describe('accounts', () => {
     const reg = await app.inject({ method: 'POST', url: '/api/auth/register', payload: { email: 'n@example.test', password: 'correct horse battery', client: 'native' } });
     const { token } = reg.json();
     assert.ok(token);
-    assert.equal(reg.cookies.find((c: any) => c.name === 'ki_session'), undefined);
+    assert.equal(reg.cookies.find((c: any) => c.name === 'iw_session'), undefined);
     const res = await app.inject({ method: 'POST', url: '/api/reviews', headers: { authorization: `Bearer ${token}` }, payload: sampleReview('selat') });
     assert.equal(res.statusCode, 201, res.body);
   });

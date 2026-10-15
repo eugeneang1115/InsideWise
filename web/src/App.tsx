@@ -23,7 +23,7 @@ function parseRoute(hash: string): Route {
 
 function initialLang(): Lang {
   try {
-    const saved = localStorage.getItem('ki-language');
+    const saved = localStorage.getItem('iw-language');
     if (saved === 'en' || saved === 'ms' || saved === 'zh') return saved;
   } catch { /* storage unavailable */ }
   const nav = navigator.language.toLowerCase();
@@ -79,7 +79,7 @@ export function App() {
 
   const changeLang = (value: Lang) => {
     setLang(value);
-    try { localStorage.setItem('ki-language', value); } catch { /* storage unavailable */ }
+    try { localStorage.setItem('iw-language', value); } catch { /* storage unavailable */ }
   };
   const write = () => ctx.withAccount('signInToWrite', () =>
     openDialog(t('write'), <ReviewForm companyId={route.screen === 'explore' ? route.companyId : undefined} />));
@@ -89,8 +89,8 @@ export function App() {
   return (
     <Ctx.Provider value={ctx}>
       <header>
-        <a href="#/" className="brand" aria-label="KerjaInside">
-          <span className="mark">ki</span><span>kerja<em>inside</em><small>MALAYSIA</small></span>
+        <a href="#/" className="brand" aria-label="Insidewise">
+          <span className="mark">iw</span><span>inside<em>wise</em><small>MALAYSIA</small></span>
         </a>
         <nav>
           <a href="#/" className={active === 'explore' ? 'active' : ''}>{t('explore')}</a>

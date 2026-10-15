@@ -17,14 +17,14 @@ jobs:
         options: >-
           --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
     env:
-      DATABASE_URL: postgres://postgres:postgres@localhost:5432/kerjainside
-      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/kerjainside_test
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/insidewise
+      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/insidewise_test
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
-      - run: psql postgres://postgres:postgres@localhost:5432/postgres -c 'CREATE DATABASE kerjainside' -c 'CREATE DATABASE kerjainside_test'
+      - run: psql postgres://postgres:postgres@localhost:5432/postgres -c 'CREATE DATABASE insidewise' -c 'CREATE DATABASE insidewise_test'
       - run: npm run typecheck
       - name: API tests
         run: npm test
@@ -46,7 +46,7 @@ jobs:
   android:
     runs-on: ubuntu-latest
     env:
-      # Set this repository variable to the deployed API origin, e.g. https://kerjainside.example.
+      # Set this repository variable to the deployed API origin, e.g. https://insidewise.example.
       VITE_API_URL: ${{ vars.API_URL }}
     steps:
       - uses: actions/checkout@v4
@@ -62,5 +62,5 @@ jobs:
         working-directory: web/android
       - uses: actions/upload-artifact@v4
         with:
-          name: kerjainside-debug-apk
+          name: insidewise-debug-apk
           path: web/android/app/build/outputs/apk/debug/app-debug.apk

@@ -1,4 +1,4 @@
-// Renders the provisional "ki" mark into Android launcher icons and splash screens.
+// Renders the provisional "iw" mark into Android launcher icons and splash screens.
 // Run from web/: node scripts/android-assets.mjs   (needs Playwright's Chromium)
 import { readFileSync } from 'node:fs';
 import { chromium } from '@playwright/test';
@@ -10,7 +10,7 @@ const FONT = "'Segoe UI', Inter, Arial, sans-serif";
 
 const mark = (size, { radius = 0.28, bg = GREEN, scale = 1 } = {}) => `
   <div style="width:${size}px;height:${size}px;border-radius:${radius * size}px;background:${bg};display:grid;place-items:center">
-    <span style="color:#fff;font:700 ${size * 0.56 * scale}px/1 ${FONT};letter-spacing:${-size * 0.05 * scale}px;padding-right:${size * 0.04 * scale}px;margin-top:${-size * 0.04 * scale}px">ki</span>
+    <span style="color:#fff;font:700 ${size * 0.5 * scale}px/1 ${FONT};letter-spacing:${-size * 0.02 * scale}px;padding-right:${size * 0.01 * scale}px;margin-top:${-size * 0.04 * scale}px">iw</span>
   </div>`;
 
 const densities = { mdpi: 1, hdpi: 1.5, xhdpi: 2, xxhdpi: 3, xxxhdpi: 4 };

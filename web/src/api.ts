@@ -4,7 +4,7 @@ import { Preferences } from '@capacitor/preferences';
 export const isNative = Capacitor.isNativePlatform();
 /** Web is served by the API server (same origin). The Android app calls the deployed API. */
 const BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
-const TOKEN_KEY = 'ki-session-token';
+const TOKEN_KEY = 'iw-session-token';
 
 export interface Office { city: string; state: string; lat: number; lng: number; isPrimary: boolean }
 export interface Company {
@@ -44,7 +44,7 @@ async function setToken(value: string | null) {
 }
 
 function csrf(): string {
-  return document.cookie.split('; ').find((c) => c.startsWith('ki_csrf='))?.slice(8) ?? '';
+  return document.cookie.split('; ').find((c) => c.startsWith('iw_csrf='))?.slice(8) ?? '';
 }
 
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {

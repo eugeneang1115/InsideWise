@@ -1,10 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
-    namespace = "my.kerjainside.app"
+    namespace = "my.insidewise.app"
     compileSdk = rootProject.ext.compileSdkVersion
     defaultConfig {
-        applicationId "my.kerjainside.app"
+        applicationId "my.insidewise.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

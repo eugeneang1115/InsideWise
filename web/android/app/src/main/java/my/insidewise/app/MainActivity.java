@@ -1,4 +1,4 @@
-package my.kerjainside.app;
+package my.insidewise.app;
 
 import com.getcapacitor.BridgeActivity;
 

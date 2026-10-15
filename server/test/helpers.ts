@@ -9,7 +9,7 @@ export const MODERATOR = 'mod@example.test';
 export async function setup(): Promise<{ app: FastifyInstance; db: Db }> {
   const config = loadConfig({
     ...process.env,
-    DATABASE_URL: process.env.TEST_DATABASE_URL ?? 'postgres://postgres@127.0.0.1:5432/kerjainside_test',
+    DATABASE_URL: process.env.TEST_DATABASE_URL ?? 'postgres://postgres@127.0.0.1:5432/insidewise_test',
     MODERATOR_EMAILS: MODERATOR,
     DISABLE_RATE_LIMIT: 'true',
   });
@@ -27,11 +27,11 @@ export class Browser {
   constructor(private app: FastifyInstance) {}
 
   async req(method: 'GET' | 'POST' | 'PUT' | 'DELETE', url: string, body?: unknown, opts: { csrf?: boolean } = {}) {
-    if (!this.cookies.ki_csrf) await this.app.inject({ method: 'GET', url: '/api/me' }).then((r) => this.keep(r));
+    if (!this.cookies.iw_csrf) await this.app.inject({ method: 'GET', url: '/api/me' }).then((r) => this.keep(r));
     const res = await this.app.inject({
       method, url, payload: body as object,
       cookies: this.cookies,
-      headers: opts.csrf === false ? {} : { 'x-csrf-token': this.cookies.ki_csrf },
+      headers: opts.csrf === false ? {} : { 'x-csrf-token': this.cookies.iw_csrf },
     });
     this.keep(res);
     return { status: res.statusCode, body: res.body ? res.json() : undefined };

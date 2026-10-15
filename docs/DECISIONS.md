@@ -26,12 +26,12 @@ Defaults picked while building from the design handoff. Each can be changed; the
   filters, map controls, review actions and icon buttons are at least 44×44 px.
 - **Map:** Leaflet with marker clustering and native pinch zoom. Tiles default to OpenStreetMap,
   configurable through `VITE_TILE_URL`.
-- **Prototype fix:** the handoff's single-file `KerjaInside.html` threw an error on load because
+- **Prototype fix:** the handoff's single-file `Insidewise.html` threw an error on load because
   bundling collapsed `$$` into `$`. `docs/design/KerjaInside.html` is rebuilt correctly.
 
 ## Still open (needs the owner)
 
-- Final brand name, app id (`my.kerjainside.app`, fixed after first Play release) and trademark check.
+- Trademark and domain check for the name Insidewise (chosen 2026-10-15), and the app id `my.insidewise.app`, which cannot change after the first Play release.
 - Hosting, domain, and a map tile provider that allows production traffic (OSM's public tiles do not).
 - Real verified company directory and office locations.
 - Privacy notice, community rules and operator contact, reviewed by a native speaker in Malay and Chinese.

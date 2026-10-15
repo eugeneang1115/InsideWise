@@ -1,5 +1,5 @@
 {
-  "name": "kerjainside",
+  "name": "insidewise",
   "private": true,
   "workspaces": ["server", "web"],
   "scripts": {

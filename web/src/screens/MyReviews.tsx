@@ -44,7 +44,7 @@ export function MyReviews({ onWrite }: { onWrite: () => void }) {
         openDialog(t('exportData'), <pre className="export">{JSON.stringify(data, null, 2)}</pre>);
         return;
       }
-      const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'kerjainside-data.json' });
+      const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'insidewise-data.json' });
       a.click();
       URL.revokeObjectURL(a.href);
     } catch (err) {

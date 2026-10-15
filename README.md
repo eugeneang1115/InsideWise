@@ -1,4 +1,4 @@
-# KerjaInside
+# Insidewise
 
 Anonymous workplace reviews for Malaysian companies. Readers find companies on a map, read and compare
 reviews; current and former employees post reviews without their name. English, Bahasa Malaysia and
@@ -46,7 +46,7 @@ CI (`.github/workflows/ci.yml`) runs both against a Postgres service and builds 
 
 ## Deploy
 
-`docker build -t kerjainside .` produces one image that runs migrations on start and serves the API
+`docker build -t insidewise .` produces one image that runs migrations on start and serves the API
 and web app on port 8787. Give it `DATABASE_URL`, `MODERATOR_EMAILS` and `NODE_ENV=production`
 (secure cookies), and put it behind HTTPS.
 
@@ -65,4 +65,4 @@ already in the default `CORS_ORIGINS`, so the API accepts its requests without e
 CI builds `app-debug.apk` as a downloadable artifact when the `API_URL` repository variable is set.
 A signed release build needs a keystore and a Play Console listing; see `docs/DECISIONS.md`.
 
-Icons and splash screens are rendered from the provisional "ki" mark by `node scripts/android-assets.mjs`.
+Icons and splash screens are rendered from the provisional "iw" mark by `node scripts/android-assets.mjs`.
