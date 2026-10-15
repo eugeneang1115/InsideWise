@@ -6,9 +6,11 @@ import { SearchIcon, ShieldIcon } from '../icons';
 import { MapView } from './MapView';
 import { CompanyDetail } from './CompanyDetail';
 import { ResultsPanel } from './ResultsPanel';
+import { AddCompanyForm } from '../dialogs/AddCompanyForm';
 
 export function Explore({ companyId, onWrite, onPrivacy }: { companyId?: string; onWrite: () => void; onPrivacy: () => void }) {
-  const { t, navigate, dataVersion } = useApp();
+  const { t, navigate, dataVersion, withAccount, openDialog } = useApp();
+  const addCompany = () => withAccount('signInToAdd', () => openDialog(t('addCompany'), <AddCompanyForm initialName={input.trim()} />));
   const [input, setInput] = useState('');
   const [query, setQuery] = useState('');
   const [industry, setIndustry] = useState('');
@@ -99,11 +101,18 @@ export function Explore({ companyId, onWrite, onPrivacy }: { companyId?: string;
                   <span className="stars">★</span><strong>{c.rating == null ? '—' : c.rating.toFixed(1)}</strong>
                   <span className="muted">({c.reviewCount} {t('reviews')})</span>
                   {c.isDemo && <span className="sample">DEMO</span>}
+                  {c.userAdded && <span className="sample">{t('userAdded')}</span>}
                 </div>
                 {c.size && <span className="pill">{c.size} {t('employees')}</span>}
               </div>
             </button>
-          )) : <p className="empty">{t('empty')}</p>}
+          )) : (
+            <div className="empty">
+              <p>{query || industry || minimum || bbox ? t('empty') : t('noCompaniesYet')}</p>
+              <button className="button primary" onClick={addCompany}>+ &nbsp;{t('addCompany')}</button>
+            </div>
+          )}
+          {visible.length > 0 && <button className="add-company-row" onClick={addCompany}>+ &nbsp;{t('addCompanyHint')}</button>}
         </ResultsPanel>
 
         <MapView companies={visible} selectedId={companyId} onSelect={select} onSearchArea={setBbox} resetSignal={resetSignal} fitSignal={fitSignal} />

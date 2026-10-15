@@ -96,6 +96,44 @@ const added: Record<string, Triplet> = {
     '使用示例数据的预览。任何电子邮件和 10 个字符的密码均可使用，每个账户都可以审核，刷新后不会保留任何内容。',
   ],
   reviewsHeading: ['Reviews', 'Ulasan', '评价'],
+  Manufacturing: ['Manufacturing', 'Pembuatan', '制造业'],
+  Retail: ['Retail', 'Runcit', '零售'],
+  Healthcare: ['Healthcare', 'Penjagaan kesihatan', '医疗保健'],
+  Education: ['Education', 'Pendidikan', '教育'],
+  Hospitality: ['Hospitality and food', 'Hospitaliti dan makanan', '酒店与餐饮'],
+  Logistics: ['Logistics', 'Logistik', '物流'],
+  Energy: ['Energy', 'Tenaga', '能源'],
+  Construction: ['Construction', 'Pembinaan', '建筑'],
+  Property: ['Property', 'Hartanah', '房地产'],
+  Telecommunications: ['Telecommunications', 'Telekomunikasi', '电信'],
+  Government: ['Government', 'Kerajaan', '政府机构'],
+  ProfessionalServices: ['Professional services', 'Perkhidmatan profesional', '专业服务'],
+  Agriculture: ['Agriculture', 'Pertanian', '农业'],
+  Other: ['Other', 'Lain-lain', '其他'],
+  addCompany: ['Add a company', 'Tambah syarikat', '添加公司'],
+  addCompanyHint: ["Can't find a company? Add it.", 'Tidak jumpa syarikat? Tambahkannya.', '找不到公司？添加它。'],
+  addCompanyNote: [
+    'Add the employer as it is officially named. It appears on the map right away, and moderators remove companies that are not real employers.',
+    'Masukkan nama rasmi majikan. Ia dipaparkan pada peta serta-merta, dan moderator akan membuang syarikat yang bukan majikan sebenar.',
+    '请填写雇主的正式名称。公司会立即显示在地图上，非真实雇主将被审核员删除。',
+  ],
+  companyName: ['Company name', 'Nama syarikat', '公司名称'],
+  industry: ['Industry', 'Industri', '行业'],
+  city: ['City', 'Bandar', '城市'],
+  sizeOptional: ['Number of employees (optional)', 'Bilangan pekerja (pilihan)', '员工人数（可选）'],
+  websiteOptional: ['Website (optional)', 'Laman web (pilihan)', '网站（可选）'],
+  companyAdded: ['Company added. Now share your experience.', 'Syarikat ditambah. Kongsi pengalaman anda sekarang.', '公司已添加，现在分享您的经历吧。'],
+  companyExists: ['This company is already listed. Opening it for you.', 'Syarikat ini sudah disenaraikan. Kami bukakannya untuk anda.', '该公司已在列表中，正在为您打开。'],
+  signInToAdd: ['Sign in to add a company.', 'Log masuk untuk menambah syarikat.', '请登录后添加公司。'],
+  userAdded: ['Added by a reviewer', 'Ditambah oleh pengulas', '由评价者添加'],
+  newCompanies: ['New companies to check', 'Syarikat baharu untuk disemak', '待核查的新公司'],
+  keep: ['Keep', 'Kekalkan', '保留'],
+  remove: ['Remove', 'Buang', '删除'],
+  noCompaniesYet: [
+    'No companies listed yet. Add the first one and share your experience.',
+    'Belum ada syarikat disenaraikan. Tambah yang pertama dan kongsi pengalaman anda.',
+    '暂无公司。添加第一家公司并分享您的经历。',
+  ],
   offices: ['Offices', 'Pejabat', '办公地点'],
   reviewedAt: ['Published', 'Diterbitkan', '发布于'],
   ratingsBreakdown: ['Ratings breakdown', 'Pecahan penilaian', '评分明细'],
@@ -121,8 +159,13 @@ export function translator(lang: Lang) {
 export function industriesMatching(query: string): string[] {
   const q = query.trim().toLowerCase();
   if (!q) return [];
-  return ['Technology', 'Creative', 'Finance', 'Consumer'].filter((k) => copy[k].some((label) => label.toLowerCase().includes(q)));
+  return INDUSTRIES.filter((k) => copy[k].some((label) => label.toLowerCase().includes(q)));
 }
 
-export const INDUSTRIES = ['Technology', 'Creative', 'Finance', 'Consumer'] as const;
+export const INDUSTRIES = [
+  'Technology', 'Finance', 'Consumer', 'Creative', 'Manufacturing', 'Retail', 'Healthcare', 'Education',
+  'Hospitality', 'Logistics', 'Energy', 'Construction', 'Property', 'Telecommunications', 'Government',
+  'ProfessionalServices', 'Agriculture', 'Other',
+] as const;
+export const COMPANY_SIZES = ['1–10', '11–50', '51–200', '201–500', '501–1,000', '1,000+'] as const;
 export const METRICS = ['overall', 'pay', 'management', 'culture', 'growth', 'balance'] as const;

@@ -1,7 +1,8 @@
 // In-browser stand-in for the API, used only by demo builds (VITE_DEMO=true) so the app can be tried
 // without a server. Data lives in memory and resets on reload. Mirrors server/src/routes/*.
 import seed from '../../server/seed/demo-companies.json';
-import { ApiFailure, type Company, type OwnReview, type PublicReview, type ReviewStatus } from './api';
+import CITIES from '../../server/seed/my-cities.json';
+import { ApiFailure, type Company, type OwnCompany, type OwnReview, type PublicReview, type ReviewStatus } from './api';
 
 type Review = Omit<OwnReview, 'companyName' | 'appealOpen' | 'publishedAt'> & {
   userId: string; isDemo: boolean; createdAt: string; updatedAt: string; publishedAt: string | null;
@@ -27,7 +28,17 @@ const now = () => new Date().toISOString();
 const daysAgo = (n: number) => new Date(Date.now() - n * 86400000).toISOString();
 const fail = (code: string, status = 400): never => { throw new ApiFailure(code, status); };
 
-const companies = seed.map((c) => ({ ...c, size: c.size ?? null, isDemo: true }));
+type DemoCompany = (typeof seed)[number] & {
+  size: string | null; isDemo: boolean; userAdded?: boolean; status?: 'published' | 'rejected';
+  submittedBy?: string; website?: string | null; checked?: boolean; createdAt?: string;
+};
+const companies: DemoCompany[] = seed.map((c) => ({ ...c, size: c.size ?? null, isDemo: true }));
+const visible = (c: DemoCompany) => c.status !== 'rejected';
+const ownCompany = (c: DemoCompany): OwnCompany => ({
+  id: c.id, name: c.name, industry: c.industry, size: c.size, status: c.status ?? 'published', website: c.website ?? null,
+  city: c.offices[0].city, createdAt: c.createdAt ?? now(), reviewCount: reviews.filter((r) => r.companyId === c.id).length,
+});
+const PALETTE = ['#42685c', '#476f8a', '#7a5c8e', '#9a6a3c', '#3f7b70', '#8a4f4f', '#5b6d3a'];
 const reviews: Review[] = companies.flatMap((c, i) => [0, 1].map((j) => {
   const s = SAMPLES[(i + j) % 3];
   return {
@@ -44,7 +55,7 @@ let me: { id: string; email: string; isModerator: boolean } | null = null;
 const published = (companyId: string) => reviews.filter((r) => r.companyId === companyId && r.status === 'published');
 const avg = (rs: Review[], k: 'overall' | 'pay' | 'management' | 'culture' | 'growth' | 'balance') =>
   rs.length ? rs.reduce((s, r) => s + r[k], 0) / rs.length : null;
-const withAggregate = (c: (typeof companies)[number]): Company => {
+const withAggregate = ({ status: _s, submittedBy: _b, checked: _k, ...c }: DemoCompany): Company => {
   const rs = published(c.id);
   return { ...c, reviewCount: rs.length, rating: avg(rs, 'overall') };
 };
@@ -85,7 +96,7 @@ export async function demoRequest(method: string, path: string, body: any): Prom
       const text = (q.get('q') ?? '').toLowerCase();
       const extra = (q.get('qIndustries') ?? '').split(',').filter(Boolean);
       const bbox = q.get('bbox')?.split(',').map(Number);
-      let list = companies.map(withAggregate).filter((c) =>
+      let list = companies.filter(visible).map(withAggregate).filter((c) =>
         (!text || [c.name, c.industry, ...c.offices.flatMap((o) => [o.city, o.state])].some((s) => s.toLowerCase().includes(text)) || extra.includes(c.industry))
         && (!q.get('industry') || c.industry === q.get('industry'))
         && (!Number(q.get('minRating')) || (c.rating ?? 0) >= Number(q.get('minRating')))
@@ -96,7 +107,7 @@ export async function demoRequest(method: string, path: string, body: any): Prom
       return { companies: list };
     }
     case 'GET /companies/:id': {
-      const c = companies.find((x) => x.id === pid) ?? fail('missing', 404);
+      const c = companies.find((x) => x.id === pid && visible(x)) ?? fail('missing', 404);
       const rs = published(c.id);
       return { company: { ...withAggregate(c), breakdown: { pay: avg(rs, 'pay'), management: avg(rs, 'management'), culture: avg(rs, 'culture'), growth: avg(rs, 'growth'), balance: avg(rs, 'balance') } } };
     }
@@ -109,6 +120,36 @@ export async function demoRequest(method: string, path: string, body: any): Prom
       if ((body?.reason ?? '').trim().length < 10) fail('invalid');
       const r = reviews.find((x) => x.id === pid && x.status === 'published') ?? fail('missing', 404);
       reports.push({ id: id(), reviewId: r.id, reason: body.reason.trim(), status: 'open', createdAt: now() });
+      return { ok: true };
+    }
+    case 'POST /companies': {
+      const v = viewer();
+      const name = String(body?.name ?? '').trim();
+      const city = CITIES.find((c) => c.city === body?.city) ?? fail('invalid');
+      if (name.length < 2 || name.length > 120 || !body?.industry) fail('invalid');
+      if (PERSONAL.some((re) => re.test(name))) fail('personal', 422);
+      const existing = companies.find((c) => visible(c) && c.name.toLowerCase() === name.toLowerCase());
+      if (existing) throw new ApiFailure('companyExists', 409, { companyId: existing.id });
+      const c: DemoCompany = {
+        id: `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'company'}-${++seq}`, name,
+        industry: body.industry, size: body.size || null, website: body.website || null, isDemo: false, userAdded: true,
+        status: 'published', submittedBy: v.id, createdAt: now(),
+        color: PALETTE[seq % PALETTE.length],
+        initials: name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toLowerCase(),
+        offices: [{ city: city.city, state: city.state, lat: city.lat, lng: city.lng, isPrimary: true }],
+      };
+      companies.push(c);
+      return { company: ownCompany(c) };
+    }
+    case 'GET /me/companies': {
+      const v = viewer();
+      return { companies: companies.filter((c) => c.submittedBy === v.id).map(ownCompany) };
+    }
+    case 'POST /mod/companies/:id': {
+      moderator();
+      const c = companies.find((x) => x.id === pid && x.userAdded) ?? fail('missing', 404);
+      c.status = body?.decision === 'remove' ? 'rejected' : 'published';
+      c.checked = true;
       return { ok: true };
     }
     case 'GET /me': return { me };
@@ -173,6 +214,7 @@ export async function demoRequest(method: string, path: string, body: any): Prom
       moderator();
       const byId = (rid: string) => reviews.find((r) => r.id === rid)!;
       return {
+        companies: companies.filter((c) => c.userAdded && !c.checked && visible(c)).map(ownCompany),
         pending: reviews.filter((r) => r.status === 'pending').map(modReview),
         reports: reports.filter((p) => p.status === 'open' && byId(p.reviewId)).map((p) => ({ id: p.id, reason: p.reason, createdAt: p.createdAt, review: modReview(byId(p.reviewId)) })),
         appeals: appeals.filter((a) => a.status === 'open' && byId(a.reviewId)).map((a) => ({ id: a.id, message: a.message, createdAt: a.createdAt, review: modReview(byId(a.reviewId)) })),

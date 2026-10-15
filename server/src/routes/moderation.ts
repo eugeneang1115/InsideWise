@@ -4,6 +4,7 @@ import { requireModerator } from '../auth.js';
 import { ApiError } from '../errors.js';
 import { appealDecision, decisionInput } from '../schemas.js';
 import { uuidOrMissing } from './public.js';
+import { NEW_COMPANIES_SQL } from './companies.js';
 
 // Moderators see review content and status, never the author's account.
 const MOD_REVIEW = `json_build_object('id', r.id, 'companyId', r.company_id, 'companyName', c.name, 'status', r.status,
@@ -16,7 +17,8 @@ const NEXT_STATUS = { publish: 'published', reject: 'rejected', request_changes:
 export function moderationRoutes(app: FastifyInstance, db: Db) {
   app.get('/api/mod/queue', async (req) => {
     requireModerator(req);
-    const [pending, reports, appeals] = await Promise.all([
+    const [companies, pending, reports, appeals] = await Promise.all([
+      db.query(NEW_COMPANIES_SQL),
       db.query(`SELECT ${MOD_REVIEW} AS review FROM reviews r JOIN companies c ON c.id = r.company_id
                 WHERE r.status = 'pending' ORDER BY r.updated_at ASC LIMIT 100`),
       db.query(`SELECT p.id, p.reason, p.created_at AS "createdAt", ${MOD_REVIEW} AS review
@@ -26,7 +28,7 @@ export function moderationRoutes(app: FastifyInstance, db: Db) {
                 FROM appeals a JOIN reviews r ON r.id = a.review_id JOIN companies c ON c.id = r.company_id
                 WHERE a.status = 'open' ORDER BY a.created_at ASC LIMIT 100`),
     ]);
-    return { pending: pending.rows.map((r) => r.review), reports: reports.rows, appeals: appeals.rows };
+    return { companies: companies.rows, pending: pending.rows.map((r) => r.review), reports: reports.rows, appeals: appeals.rows };
   });
 
   app.post<{ Params: { id: string } }>('/api/mod/reviews/:id/decision', async (req) => {

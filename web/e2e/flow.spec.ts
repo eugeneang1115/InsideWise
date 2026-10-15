@@ -28,7 +28,7 @@ async function signInAsModerator(page: Page) {
 
 test('browse, search in Chinese and open a company', async ({ page }) => {
   await page.goto('/');
-  await expect(page.locator('.company-card')).toHaveCount(9);
+  await expect(page.locator('.company-card', { hasText: 'Teras Finance' })).toBeVisible();
   await page.getByRole('combobox', { name: /Language/ }).selectOption('zh');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('入职之前，先了解职场。');
   await page.getByRole('searchbox').fill('金融');
@@ -36,6 +36,36 @@ test('browse, search in Chinese and open a company', async ({ page }) => {
   await page.locator('.company-card').first().click();
   await expect(page.getByRole('region', { name: '公司概况' }).getByRole('heading', { name: 'Teras Finance' })).toBeVisible();
   await page.getByRole('combobox', { name: /Language/ }).selectOption('en');
+});
+
+test('add a company, then a moderator removes it', async ({ browser }, info) => {
+  const run = `${info.project.name}-${Date.now()}`;
+  const name = `Kopi Lab ${run}`;
+  const page = await browser.newPage();
+  await page.goto('/');
+  await page.getByRole('button', { name: /Can't find a company/ }).click();
+  await signIn(page, `adder-${run}@example.test`, true);
+
+  const dialog = page.getByRole('dialog');
+  await expect(dialog.getByRole('heading', { name: 'Add a company' })).toBeVisible();
+  await dialog.getByLabel('Company name').fill(name);
+  await dialog.getByLabel('Industry').selectOption('Hospitality');
+  await dialog.getByLabel('City').selectOption('Ipoh');
+  await dialog.getByRole('button', { name: 'Add a company' }).click();
+  // It is public at once and the review form follows.
+  await expect(dialog.getByRole('heading', { name: 'Write a review' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Company overview' }).getByRole('heading', { name })).toBeVisible();
+  await dialog.getByRole('button', { name: /Close/ }).click();
+
+  const mod = await browser.newPage();
+  await signInAsModerator(mod);
+  await mod.goto('/#/moderation');
+  const card = mod.locator('.mod-company', { hasText: name });
+  await card.getByRole('button', { name: 'Remove' }).click();
+  await expect(card).toHaveCount(0);
+  await page.goto('/');
+  await page.getByRole('searchbox').fill(name);
+  await expect(page.locator('.company-card')).toHaveCount(0);
 });
 
 test('write a review, moderate it, and see it published', async ({ browser }, info) => {

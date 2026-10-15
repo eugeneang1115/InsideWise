@@ -1,7 +1,12 @@
 import { z } from 'zod';
 
 export const METRICS = ['overall', 'pay', 'management', 'culture', 'growth', 'balance'] as const;
-export const INDUSTRIES = ['Technology', 'Creative', 'Finance', 'Consumer'] as const;
+export const INDUSTRIES = [
+  'Technology', 'Finance', 'Consumer', 'Creative', 'Manufacturing', 'Retail', 'Healthcare', 'Education',
+  'Hospitality', 'Logistics', 'Energy', 'Construction', 'Property', 'Telecommunications', 'Government',
+  'ProfessionalServices', 'Agriculture', 'Other',
+] as const;
+export const COMPANY_SIZES = ['1–10', '11–50', '51–200', '201–500', '501–1,000', '1,000+'] as const;
 
 const rating = z.coerce.number().int().min(1).max(5);
 const text = (min: number, max: number) => z.string().trim().min(min).max(max);
@@ -46,6 +51,19 @@ export const companyQuery = z.object({
   sort: z.enum(['name', 'rating', 'reviews']).default('name'),
   bbox: z.string().regex(/^-?[\d.]+,-?[\d.]+,-?[\d.]+,-?[\d.]+$/).optional(),
   limit: z.coerce.number().int().min(1).max(500).default(200),
+});
+
+export const companyInput = z.object({
+  name: text(2, 120),
+  industry: z.enum(INDUSTRIES),
+  city: z.string().min(1).max(80),
+  size: z.enum(COMPANY_SIZES).optional().or(z.literal('').transform(() => undefined)),
+  website: z.string().trim().max(200).url().refine((u) => /^https?:\/\//i.test(u)).optional()
+    .or(z.literal('').transform(() => undefined)),
+});
+export const companyDecision = z.object({
+  decision: z.enum(['keep', 'remove']),
+  note: z.string().trim().max(1000).optional(),
 });
 
 export const pageQuery = z.object({ page: z.coerce.number().int().min(1).max(1000).default(1) });

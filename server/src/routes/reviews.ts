@@ -29,7 +29,11 @@ export function reviewRoutes(app: FastifyInstance, db: Db) {
     const v = requireViewer(req);
     const input = reviewInput.parse(req.body);
     if (containsPersonalDetails(input.title, input.pros, input.cons)) throw new ApiError('personal');
-    const company = await db.query('SELECT 1 FROM companies WHERE id = $1', [input.companyId]);
+    // Reviews can go to listed companies, or to a company the reviewer added that is awaiting approval.
+    const company = await db.query(
+      `SELECT 1 FROM companies WHERE id = $1 AND (status = 'published' OR submitted_by = $2)`,
+      [input.companyId, v.id],
+    );
     if (!company.rowCount) throw new ApiError('missing');
     const { rows } = await db.query(
       `INSERT INTO reviews (company_id, user_id, employment, language, overall, pay, management, culture, growth, balance, title, pros, cons)

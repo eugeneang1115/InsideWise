@@ -174,3 +174,43 @@ describe('review lifecycle', () => {
     assert.equal(rowCount, 0);
   });
 });
+
+describe('company submissions', () => {
+  it('publishes user-added companies at once and lets moderators keep or remove them', async () => {
+    const author = new Browser(app);
+    await author.register('adder@example.test');
+    assert.equal((await new Browser(app).req('POST', '/api/companies', { name: 'Anon Co', industry: 'Retail', city: 'Ipoh' })).status, 401);
+    assert.equal((await author.req('POST', '/api/companies', { name: 'Bad City Sdn Bhd', industry: 'Retail', city: 'Atlantis' })).body.error, 'invalid');
+
+    const created = await author.req('POST', '/api/companies', { name: 'Lembah Logistik Sdn Bhd', industry: 'Logistics', city: 'Klang', size: '51–200' });
+    assert.equal(created.status, 201, JSON.stringify(created.body));
+    const { company } = created.body;
+    assert.equal(company.status, 'published');
+    assert.equal(company.city, 'Klang');
+
+    const reader = new Browser(app);
+    const listed = (await reader.req('GET', '/api/companies?q=lembah')).body.companies;
+    assert.equal(listed.length, 1);
+    assert.equal(listed[0].userAdded, true);
+    assert.ok(!JSON.stringify(listed).includes('adder@example.test'));
+    const dup = await author.req('POST', '/api/companies', { name: 'lembah logistik sdn bhd', industry: 'Logistics', city: 'Klang' });
+    assert.equal(dup.body.error, 'companyExists');
+    assert.equal(dup.body.companyId, company.id);
+    assert.equal((await author.req('POST', '/api/reviews', sampleReview(company.id))).status, 201);
+
+    const mod = new Browser(app);
+    await mod.req('POST', '/api/auth/login', { email: MODERATOR, password: 'correct horse battery' });
+    const queued = (await mod.req('GET', '/api/mod/queue')).body.companies.find((c: any) => c.id === company.id);
+    assert.equal(queued.reviewCount, 1);
+    assert.equal((await author.req('POST', `/api/mod/companies/${company.id}`, { decision: 'remove' })).status, 403);
+
+    const fake = (await author.req('POST', '/api/companies', { name: 'Totally Real Fake Bhd', industry: 'Other', city: 'Miri' })).body.company;
+    assert.equal((await mod.req('POST', `/api/mod/companies/${fake.id}`, { decision: 'remove' })).status, 200);
+    assert.equal((await reader.req('GET', '/api/companies?q=totally')).body.companies.length, 0);
+    assert.equal((await reader.req('GET', `/api/companies/${fake.id}`)).status, 404);
+
+    assert.equal((await mod.req('POST', `/api/mod/companies/${company.id}`, { decision: 'keep' })).status, 200);
+    assert.ok(!(await mod.req('GET', '/api/mod/queue')).body.companies.some((c: any) => c.id === company.id));
+    assert.equal((await reader.req('GET', '/api/companies?q=lembah')).body.companies.length, 1);
+  });
+});

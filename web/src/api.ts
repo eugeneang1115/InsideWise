@@ -11,7 +11,7 @@ export const isDemo = import.meta.env.VITE_DEMO === 'true';
 export interface Office { city: string; state: string; lat: number; lng: number; isPrimary: boolean }
 export interface Company {
   id: string; name: string; industry: string; size: string | null; color: string; initials: string;
-  isDemo: boolean; reviewCount: number; rating: number | null; offices: Office[];
+  isDemo: boolean; userAdded?: boolean; reviewCount: number; rating: number | null; offices: Office[];
 }
 export interface CompanyDetail extends Company {
   breakdown: Record<'pay' | 'management' | 'culture' | 'growth' | 'balance', number | null>;
@@ -27,10 +27,14 @@ export interface OwnReview extends Omit<PublicReview, 'isDemo'> {
   version: number; appealOpen: boolean;
 }
 export interface ModReview extends Omit<OwnReview, 'appealOpen' | 'publishedAt'> {}
+export interface OwnCompany {
+  id: string; name: string; industry: string; size: string | null; status: 'published' | 'rejected';
+  website: string | null; city: string; createdAt: string; reviewCount?: number;
+}
 export interface Me { id: string; email: string; isModerator: boolean }
 
 export class ApiFailure extends Error {
-  constructor(readonly code: string, readonly status: number) { super(code); }
+  constructor(readonly code: string, readonly status: number, readonly data: Record<string, unknown> = {}) { super(code); }
 }
 
 let tokenCache: string | null | undefined;
@@ -71,7 +75,7 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     if (res.status === 401 && bearer) await setToken(null);
-    throw new ApiFailure(data.error ?? 'unavailable', res.status);
+    throw new ApiFailure(data.error ?? 'unavailable', res.status, data);
   }
   return data as T;
 }
@@ -118,7 +122,12 @@ export const api = {
   deleteReview: (id: string) => request('DELETE', `/api/reviews/${id}`),
   appeal: (id: string, message: string) => request('POST', `/api/reviews/${id}/appeal`, { message }),
 
+  addCompany: (input: { name: string; industry: string; city: string; size?: string; website?: string }) =>
+    request<{ company: OwnCompany }>('POST', '/api/companies', input),
+  decideCompany: (id: string, decision: 'keep' | 'remove') => request('POST', `/api/mod/companies/${encodeURIComponent(id)}`, { decision }),
+
   queue: () => request<{
+    companies: OwnCompany[];
     pending: ModReview[];
     reports: { id: string; reason: string; createdAt: string; review: ModReview }[];
     appeals: { id: string; message: string; createdAt: string; review: ModReview }[];

@@ -45,6 +45,7 @@ export function CompanyDetail({ id, onClose, onWrite }: { id: string; onClose: (
           <h3>{t('details')}</h3>
           {company.isDemo && <p className="muted">{t('fictional')}</p>}
           {company.size && <p className="muted">{company.size} {t('employees')}</p>}
+          {company.userAdded && <p className="muted small">{t('userAdded')}</p>}
           {company.reviewCount > 0 && (
             <div className="breakdown" aria-label={t('ratingsBreakdown')}>
               {BREAKDOWN.map((k) => {

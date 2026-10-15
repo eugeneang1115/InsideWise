@@ -27,7 +27,7 @@ export function publicRoutes(app: FastifyInstance, db: Db) {
 
   app.get('/api/companies', async (req) => {
     const q = companyQuery.parse(req.query);
-    const where: string[] = [];
+    const where: string[] = [`c.status = 'published'`];
     const params: unknown[] = [];
     const p = (v: unknown) => `$${params.push(v)}`;
 
@@ -52,10 +52,10 @@ export function publicRoutes(app: FastifyInstance, db: Db) {
     }[q.sort];
 
     const { rows } = await db.query(
-      `SELECT c.id, c.name, c.industry, c.size, c.color, c.initials, c.is_demo AS "isDemo",
+      `SELECT c.id, c.name, c.industry, c.size, c.color, c.initials, c.is_demo AS "isDemo", (c.submitted_by IS NOT NULL) AS "userAdded",
          agg."reviewCount", agg.rating, ${OFFICES}
        FROM companies c ${AGGREGATE}
-       ${where.length ? 'WHERE ' + where.join(' AND ') : ''}
+       WHERE ${where.join(' AND ')}
        ORDER BY ${order} LIMIT ${p(q.limit)}`,
       params,
     );
@@ -64,14 +64,15 @@ export function publicRoutes(app: FastifyInstance, db: Db) {
 
   app.get<{ Params: { id: string } }>('/api/companies/:id', async (req) => {
     const { rows } = await db.query(
-      `SELECT c.id, c.name, c.industry, c.size, c.color, c.initials, c.is_demo AS "isDemo",
-         agg."reviewCount", agg.rating, ${OFFICES},
+      `SELECT c.id, c.name, c.industry, c.size, c.color, c.initials, c.is_demo AS "isDemo", (c.submitted_by IS NOT NULL) AS "userAdded",
+         c.status, c.website, agg."reviewCount", agg.rating, ${OFFICES},
          (SELECT json_build_object(
             'pay', avg(pay)::float, 'management', avg(management)::float, 'culture', avg(culture)::float,
             'growth', avg(growth)::float, 'balance', avg(balance)::float)
           FROM reviews WHERE company_id = c.id AND status = 'published') AS breakdown
-       FROM companies c ${AGGREGATE} WHERE c.id = $1`,
-      [req.params.id],
+       FROM companies c ${AGGREGATE}
+       WHERE c.id = $1 AND (c.status = 'published' OR c.submitted_by = $2)`,
+      [req.params.id, req.viewer?.id ?? null],
     );
     if (!rows[0]) throw new ApiError('missing');
     return { company: rows[0] };

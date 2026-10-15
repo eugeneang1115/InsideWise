@@ -26,7 +26,7 @@ export function Moderation() {
     load();
   };
 
-  const empty = queue && !queue.pending.length && !queue.reports.length && !queue.appeals.length;
+  const empty = queue && !queue.companies.length && !queue.pending.length && !queue.reports.length && !queue.appeals.length;
 
   return (
     <section className="screen account moderation">
@@ -34,6 +34,19 @@ export function Moderation() {
       <p>{t('moderationRules')}</p>
       {error ? <p className="error-text" role="alert">{errorText(t, error)}</p> : !queue ? <p className="empty">{t('loading')}</p> : empty ? <p className="empty">{t('noQueue')}</p> : (
         <>
+          {queue.companies.length > 0 && <h2 className="section-title">{t('newCompanies')} ({queue.companies.length})</h2>}
+          {queue.companies.map((c) => (
+            <div key={c.id} className="review mod-company">
+              <h3><a href={`#/company/${encodeURIComponent(c.id)}`}>{c.name}</a></h3>
+              <p className="small muted">{t(c.industry)} · {c.city}{c.size ? ` · ${c.size} ${t('employees')}` : ''} · {c.reviewCount ?? 0} {t('reviews')}</p>
+              {c.website && <p className="small"><a href={c.website} target="_blank" rel="noopener noreferrer nofollow">{c.website}</a></p>}
+              <div className="button-row">
+                <button className="button primary" onClick={() => act(() => api.decideCompany(c.id, 'keep'))}>{t('keep')}</button>
+                <button className="button danger" onClick={() => act(() => api.decideCompany(c.id, 'remove'))}>{t('remove')}</button>
+              </div>
+            </div>
+          ))}
+
           {queue.pending.length > 0 && <h2 className="section-title">{t('pendingReviews')} ({queue.pending.length})</h2>}
           {queue.pending.map((r) => (
             <ModCard key={r.id} review={r} actions={(note) => (

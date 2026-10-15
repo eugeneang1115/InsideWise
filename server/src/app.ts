@@ -12,6 +12,7 @@ import { publicRoutes } from './routes/public.js';
 import { accountRoutes } from './routes/account.js';
 import { reviewRoutes } from './routes/reviews.js';
 import { moderationRoutes } from './routes/moderation.js';
+import { companyRoutes } from './routes/companies.js';
 
 export async function buildApp(db: Db, config: Config, opts: { logger?: boolean } = {}): Promise<FastifyInstance> {
   const app = Fastify({
@@ -51,6 +52,7 @@ export async function buildApp(db: Db, config: Config, opts: { logger?: boolean 
   accountRoutes(app, db, config);
   reviewRoutes(app, db);
   moderationRoutes(app, db);
+  companyRoutes(app, db);
 
   app.addHook('onSend', async (req, reply) => {
     reply.header('X-Content-Type-Options', 'nosniff');
