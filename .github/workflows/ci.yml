@@ -46,8 +46,8 @@ jobs:
   android:
     runs-on: ubuntu-latest
     env:
-      # Set this repository variable to the deployed API origin, e.g. https://insidewise.example.
-      VITE_API_URL: ${{ vars.API_URL }}
+      # Deployed API origin. Override with the API_URL repository variable.
+      VITE_API_URL: ${{ vars.API_URL || 'https://insidewise.onrender.com' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
