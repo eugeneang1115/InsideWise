@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/kerjainside
+      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/kerjainside_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: psql postgres://postgres:postgres@localhost:5432/postgres -c 'CREATE DATABASE kerjainside' -c 'CREATE DATABASE kerjainside_test'
+      - run: npm run typecheck
+      - name: API tests
+        run: npm test
+      - run: npm run build
+      - name: Start app with demo data
+        run: |
+          npm run seed:demo -w server
+          WEB_DIST=$PWD/web/dist MODERATOR_EMAILS=mod@example.test node server/dist/index.js &
+          npx wait-on -t 30000 http://localhost:8787/api/health
+      - run: npx playwright install --with-deps chromium
+        working-directory: web
+      - name: End-to-end tests
+        run: npx playwright test
+        working-directory: web
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with: { name: playwright-traces, path: web/test-results }
+
+  android:
+    runs-on: ubuntu-latest
+    env:
+      # Set this repository variable to the deployed API origin, e.g. https://kerjainside.example.
+      VITE_API_URL: ${{ vars.API_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 21 }
+      - run: npm ci
+      - run: npm run build -w web
+      - run: npx cap sync android
+        working-directory: web
+      - run: ./gradlew assembleDebug
+        working-directory: web/android
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kerjainside-debug-apk
+          path: web/android/app/build/outputs/apk/debug/app-debug.apk

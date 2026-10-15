@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">KerjaInside</string>
+    <string name="title_activity_main">KerjaInside</string>
+    <string name="package_name">my.kerjainside.app</string>
+    <string name="custom_url_scheme">my.kerjainside.app</string>
+</resources>

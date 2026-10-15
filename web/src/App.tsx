@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { App as NativeApp } from '@capacitor/app';
 import { api, isNative, type Me } from './api';
 import { Ctx, type AppContext } from './context';
 import { LANGS, translator, type Lang } from './i18n';
@@ -45,6 +46,18 @@ export function App() {
     return () => removeEventListener('hashchange', onHash);
   }, []);
   useEffect(() => { api.me().then((r) => setMe(r.me)).catch(() => {}); }, []);
+
+  // Android back button: close the open dialog, then step back through screens, then leave the app.
+  const dialogOpen = !!dialog;
+  useEffect(() => {
+    if (!isNative) return;
+    const sub = NativeApp.addListener('backButton', () => {
+      if (dialogOpen) setDialog(null);
+      else if (location.hash && location.hash !== '#/') history.back();
+      else NativeApp.exitApp();
+    });
+    return () => { sub.then((h) => h.remove()); };
+  }, [dialogOpen]);
   useEffect(() => {
     if (!toastText) return;
     const id = setTimeout(() => setToastText(null), 5500);
