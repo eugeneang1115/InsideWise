@@ -59,7 +59,7 @@ export async function buildApp(db: Db, config: Config, opts: { logger?: boolean 
   });
 
   if (config.webDist) {
-    await app.register(fastifyStatic, { root: config.webDist, wildcard: false });
+    await app.register(fastifyStatic, { root: config.webDist });
     app.setNotFoundHandler((req, reply) => {
       if (req.url.startsWith('/api/')) return reply.code(404).send({ error: 'missing' });
       return reply.sendFile('index.html');
