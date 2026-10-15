@@ -1,0 +1,2 @@
+Passed: JavaScript syntax; 9-company data integrity; company/city/industry search; minimum rating filter; Chinese industry search; map bounds filtering; HTML escaping; all office coordinate round trips; all interface translation triplets and static translation keys.
+Not verified: browser rendering, DOM interactions, native Android, external map tiles. Browser launch was blocked by the Windows sandbox.

@@ -47,7 +47,7 @@ export function Moderation() {
 
           {queue.reports.length > 0 && <h2 className="section-title">{t('openReports')} ({queue.reports.length})</h2>}
           {queue.reports.map((p) => (
-            <ModCard key={p.id} review={p.review} context={<p className="privacy-note"><strong>{t('reason')}:</strong> {p.reason}</p>} actions={(note) => (
+            <ModCard key={p.id} review={p.review} context={<p className="privacy-note"><strong>{t('report')}:</strong> {p.reason}</p>} actions={(note) => (
               <>
                 <button className="button" onClick={() => act(() => api.dismissReport(p.id))}>{t('dismiss')}</button>
                 <button className="button danger" onClick={() => act(() => api.decide(p.review.id, 'hide', p.review.version, note))}>{t('hide')}</button>
