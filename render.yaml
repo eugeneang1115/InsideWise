@@ -1,0 +1,25 @@
+# Render Blueprint: in the Render dashboard choose New > Blueprint and pick this repository.
+# Creates the web service (API + web app, built from the Dockerfile) and a PostgreSQL database in Singapore.
+services:
+  - type: web
+    name: insidewise
+    runtime: docker
+    region: singapore
+    plan: starter
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: insidewise-db
+          property: connectionString
+      - key: MODERATOR_EMAILS
+        sync: false # asked for during setup: your own email, comma-separated for more moderators
+
+databases:
+  - name: insidewise-db
+    region: singapore
+    plan: basic-256mb
+    postgresMajorVersion: "16"

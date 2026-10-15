@@ -69,3 +69,10 @@ A self-contained preview that runs without a server (sample data, resets on relo
 `npm run build -w web -- --mode demo` writes `web/dist-demo/`.
 
 Icons and splash screens are rendered from the provisional "iw" mark by `node scripts/android-assets.mjs`.
+
+### Render (one click)
+
+`render.yaml` describes the hosted setup: in Render choose **New > Blueprint**, pick this repository, and
+enter your email for `MODERATOR_EMAILS`. Render builds the Docker image, creates the database in Singapore
+and serves the app over HTTPS. Then set the GitHub repository variable `API_URL` to the Render address so
+CI builds an Android app that talks to it.
