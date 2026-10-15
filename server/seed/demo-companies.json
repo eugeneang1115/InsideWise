@@ -1,0 +1,155 @@
+[
+  {
+    "id": "meranti",
+    "name": "Meranti Digital",
+    "industry": "Technology",
+    "size": "51–200",
+    "color": "#42685c",
+    "initials": "md",
+    "offices": [
+      {
+        "city": "Kuala Lumpur",
+        "state": "Kuala Lumpur",
+        "lat": 3.1515,
+        "lng": 101.7102,
+        "isPrimary": true
+      }
+    ]
+  },
+  {
+    "id": "awan",
+    "name": "Awan Collective",
+    "industry": "Creative",
+    "size": "11–50",
+    "color": "#a25f43",
+    "initials": "ac",
+    "offices": [
+      {
+        "city": "Kuala Lumpur",
+        "state": "Kuala Lumpur",
+        "lat": 3.143,
+        "lng": 101.697,
+        "isPrimary": true
+      }
+    ]
+  },
+  {
+    "id": "rimba",
+    "name": "Rimba Labs",
+    "industry": "Technology",
+    "size": "51–200",
+    "color": "#6f6593",
+    "initials": "rl",
+    "offices": [
+      {
+        "city": "Petaling Jaya",
+        "state": "Selangor",
+        "lat": 3.111,
+        "lng": 101.636,
+        "isPrimary": true
+      }
+    ]
+  },
+  {
+    "id": "teras",
+    "name": "Teras Finance",
+    "industry": "Finance",
+    "size": "201–500",
+    "color": "#517f98",
+    "initials": "tf",
+    "offices": [
+      {
+        "city": "Kuala Lumpur",
+        "state": "Kuala Lumpur",
+        "lat": 3.158,
+        "lng": 101.718,
+        "isPrimary": true
+      }
+    ]
+  },
+  {
+    "id": "padi",
+    "name": "Padi & Co.",
+    "industry": "Consumer",
+    "size": "51–200",
+    "color": "#a0853e",
+    "initials": "p.",
+    "offices": [
+      {
+        "city": "Shah Alam",
+        "state": "Selangor",
+        "lat": 3.073,
+        "lng": 101.518,
+        "isPrimary": true
+      }
+    ]
+  },
+  {
+    "id": "selat",
+    "name": "Selat Systems",
+    "industry": "Technology",
+    "size": "201–500",
+    "color": "#4b7670",
+    "initials": "ss",
+    "offices": [
+      {
+        "city": "George Town",
+        "state": "Penang",
+        "lat": 5.414,
+        "lng": 100.33,
+        "isPrimary": true
+      }
+    ]
+  },
+  {
+    "id": "bayu",
+    "name": "Bayu Studio",
+    "industry": "Creative",
+    "size": "11–50",
+    "color": "#ab6d79",
+    "initials": "bs",
+    "offices": [
+      {
+        "city": "Johor Bahru",
+        "state": "Johor",
+        "lat": 1.4927,
+        "lng": 103.7414,
+        "isPrimary": true
+      }
+    ]
+  },
+  {
+    "id": "kinabalu",
+    "name": "Kinabalu Works",
+    "industry": "Consumer",
+    "size": "51–200",
+    "color": "#7b8048",
+    "initials": "kw",
+    "offices": [
+      {
+        "city": "Kota Kinabalu",
+        "state": "Sabah",
+        "lat": 5.9804,
+        "lng": 116.0735,
+        "isPrimary": true
+      }
+    ]
+  },
+  {
+    "id": "kenyalang",
+    "name": "Kenyalang Creative",
+    "industry": "Creative",
+    "size": "11–50",
+    "color": "#956942",
+    "initials": "kc",
+    "offices": [
+      {
+        "city": "Kuching",
+        "state": "Sarawak",
+        "lat": 1.5535,
+        "lng": 110.3593,
+        "isPrimary": true
+      }
+    ]
+  }
+]
