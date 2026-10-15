@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { App as NativeApp } from '@capacitor/app';
-import { api, isNative, type Me } from './api';
+import { api, isDemo, isNative, type Me } from './api';
 import { Ctx, type AppContext } from './context';
 import { LANGS, translator, type Lang } from './i18n';
 import { Dialog, useDocumentLang } from './ui';
@@ -108,6 +108,7 @@ export function App() {
         </div>
       </header>
 
+      {isDemo && <p className="demo-banner" role="note">{t('previewBanner')}</p>}
       <main className={isNative ? 'native' : undefined}>
         {route.screen === 'explore' && <Explore companyId={route.companyId} onWrite={write} onPrivacy={privacy} />}
         {route.screen === 'mine' && <MyReviews onWrite={write} />}

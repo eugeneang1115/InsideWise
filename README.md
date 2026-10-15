@@ -65,4 +65,7 @@ already in the default `CORS_ORIGINS`, so the API accepts its requests without e
 CI builds `app-debug.apk` as a downloadable artifact when the `API_URL` repository variable is set.
 A signed release build needs a keystore and a Play Console listing; see `docs/DECISIONS.md`.
 
+A self-contained preview that runs without a server (sample data, resets on reload):
+`npm run build -w web -- --mode demo` writes `web/dist-demo/`.
+
 Icons and splash screens are rendered from the provisional "iw" mark by `node scripts/android-assets.mjs`.

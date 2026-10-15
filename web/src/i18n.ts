@@ -90,6 +90,11 @@ const added: Record<string, Triplet> = {
   next: ['Next', 'Seterusnya', '下一页'],
   retry: ['Try again', 'Cuba lagi', '重试'],
   noReviewsCompany: ['No published reviews yet. Be the first to share a workplace experience.', 'Belum ada ulasan diterbitkan. Jadilah yang pertama berkongsi pengalaman.', '暂无已发布的评价。成为第一个分享职场经历的人。'],
+  previewBanner: [
+    'Preview with sample data. Any email and a 10-character password work, every account can moderate, and nothing is saved after you reload.',
+    'Pratonton dengan data contoh. Sebarang e-mel dan kata laluan 10 aksara boleh digunakan, setiap akaun boleh memoderasi, dan tiada apa disimpan selepas dimuat semula.',
+    '使用示例数据的预览。任何电子邮件和 10 个字符的密码均可使用，每个账户都可以审核，刷新后不会保留任何内容。',
+  ],
   reviewsHeading: ['Reviews', 'Ulasan', '评价'],
   offices: ['Offices', 'Pejabat', '办公地点'],
   reviewedAt: ['Published', 'Diterbitkan', '发布于'],

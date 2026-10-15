@@ -5,6 +5,8 @@ export const isNative = Capacitor.isNativePlatform();
 /** Web is served by the API server (same origin). The Android app calls the deployed API. */
 const BASE = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, '') ?? '';
 const TOKEN_KEY = 'iw-session-token';
+/** Demo builds answer every call in the browser with sample data (see demo.ts); nothing reaches a server. */
+export const isDemo = import.meta.env.VITE_DEMO === 'true';
 
 export interface Office { city: string; state: string; lat: number; lng: number; isPrimary: boolean }
 export interface Company {
@@ -48,6 +50,7 @@ function csrf(): string {
 }
 
 async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
+  if (isDemo) return (await import('./demo')).demoRequest(method, path, body) as Promise<T>;
   const headers: Record<string, string> = {};
   if (body !== undefined) headers['Content-Type'] = 'application/json';
   const bearer = await token();
