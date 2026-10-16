@@ -17,12 +17,7 @@ async function signInAsModerator(page: Page) {
   await page.getByRole('main').getByRole('button', { name: 'Sign in' }).click();
   await page.getByLabel('Email').fill(MODERATOR);
   await page.getByLabel(/^Password/).fill(PASSWORD);
-  const login = page.waitForResponse((r) => r.url().endsWith('/api/auth/login'));
   await page.getByRole('dialog').getByRole('button', { name: 'Sign in', exact: true }).click();
-  if ((await login).status() === 401) {
-    await page.getByRole('button', { name: 'New here? Create an account' }).click();
-    await page.getByRole('dialog').getByRole('button', { name: 'Create account', exact: true }).click();
-  }
   await expect(page.getByRole('dialog')).toBeHidden();
 }
 
