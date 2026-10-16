@@ -48,9 +48,9 @@ jobs:
     env:
       # Deployed API origin. Override with the API_URL repository variable.
       VITE_API_URL: ${{ vars.API_URL || 'https://insidewise.onrender.com' }}
-      # AdMob ids are public (they ship inside the app). Empty means Google's test ads.
-      ADMOB_APP_ID: ''
-      VITE_ADMOB_BANNER_ID: ''
+      # AdMob ids are public (they ship inside the app). Empty values fall back to Google's test ads.
+      ADMOB_APP_ID: ca-app-pub-1537160000044661~6415023585
+      VITE_ADMOB_BANNER_ID: ca-app-pub-1537160000044661/5585157646
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
