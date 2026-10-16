@@ -54,6 +54,14 @@ export async function buildApp(db: Db, config: Config, opts: { logger?: boolean 
   moderationRoutes(app, db);
   companyRoutes(app, db);
 
+  // Settings the web app reads at runtime, so ads can be switched on in the host without a rebuild.
+  app.get('/api/config', async () => ({ adsense: config.adsenseClient ? { client: config.adsenseClient, slot: config.adsenseSlot ?? null } : null }));
+  // AdSense checks this file to confirm the site may show this publisher's ads.
+  app.get('/ads.txt', async (_req, reply) => {
+    if (!config.adsenseClient) return reply.code(404).type('text/plain').send('');
+    return reply.type('text/plain').send(`google.com, ${config.adsenseClient.replace(/^ca-/, '')}, DIRECT, f08c47fec0942fa0\n`);
+  });
+
   app.addHook('onSend', async (req, reply) => {
     reply.header('X-Content-Type-Options', 'nosniff');
     // OpenStreetMap refuses tile requests without a Referer, so cross-origin requests send the origin (never the path).

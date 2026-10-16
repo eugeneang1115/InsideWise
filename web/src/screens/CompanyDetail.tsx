@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { api, type CompanyDetail as Detail, type PublicReview } from '../api';
 import { errorText, useApp } from '../context';
 import { ReportForm } from '../dialogs/ReportForm';
 import { formatRating, ReviewBody } from '../ui';
+import { AdSlot } from '../Ad';
 
 const BREAKDOWN = ['pay', 'management', 'culture', 'growth', 'balance'] as const;
 
@@ -62,15 +63,19 @@ export function CompanyDetail({ id, onClose, onWrite }: { id: string; onClose: (
           )}
           <h3>{t('reviewsHeading')}</h3>
           {reviews && reviews.total === 0 && <p className="muted">{t('noReviewsCompany')}</p>}
-          {reviews?.reviews.map((r) => (
-            <ReviewBody key={r.id} review={r}>
+          {reviews?.reviews.map((r, i) => (
+            <Fragment key={r.id}>
+            {i === 2 && <AdSlot key={`ad-${id}-${page}`} />}
+            <ReviewBody review={r}>
               <p className="small muted">{t('reviewedAt')} {date(r.publishedAt)}</p>
               {r.isDemo && <p className="sample-note">{t('sampleReview')}</p>}
               <div className="review-actions">
                 <button onClick={() => openDialog(t('report'), <ReportForm reviewId={r.id} />)}>{t('report')}</button>
               </div>
             </ReviewBody>
+            </Fragment>
           ))}
+          {reviews && reviews.reviews.length > 0 && reviews.reviews.length <= 2 && <AdSlot key={`ad-${id}-${page}`} />}
           {pages > 1 && (
             <div className="pager">
               <button className="button" disabled={page <= 1} onClick={() => setPage(page - 1)}>{t('previous')}</button>
