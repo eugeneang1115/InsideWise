@@ -51,6 +51,7 @@ jobs:
       # AdMob ids are public (they ship inside the app). Empty values fall back to Google's test ads.
       ADMOB_APP_ID: ca-app-pub-1537160000044661~6415023585
       VITE_ADMOB_BANNER_ID: ca-app-pub-1537160000044661/5585157646
+      KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -67,3 +68,17 @@ jobs:
         with:
           name: insidewise-debug-apk
           path: web/android/app/build/outputs/apk/debug/app-debug.apk
+      # Google Play upload: a release bundle signed with the upload key, built only when the secrets exist.
+      - name: Build signed release bundle
+        if: ${{ env.KEYSTORE_B64 != '' }}
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        working-directory: web/android
+        run: |
+          echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+          ANDROID_KEYSTORE_FILE="$RUNNER_TEMP/upload.jks" ./gradlew bundleRelease
+      - uses: actions/upload-artifact@v4
+        if: ${{ hashFiles('web/android/app/build/outputs/bundle/release/app-release.aab') != '' }}
+        with:
+          name: insidewise-release-aab
+          path: web/android/app/build/outputs/bundle/release/app-release.aab
