@@ -4,7 +4,6 @@ import { api, isDemo, isNative, type Me } from './api';
 import { Ctx, type AppContext } from './context';
 import { LANGS, translator, type Lang } from './i18n';
 import { Dialog, useDocumentLang } from './ui';
-import { useAds } from './Ad';
 import { MapIcon, PenIcon, ScalesIcon, UserIcon } from './icons';
 import { Explore } from './screens/Explore';
 import { MyReviews } from './screens/MyReviews';
@@ -40,7 +39,6 @@ export function App() {
   const [dataVersion, setDataVersion] = useState(0);
   const t = useMemo(() => translator(lang), [lang]);
   useDocumentLang(lang);
-  useAds();
 
   useEffect(() => {
     const onHash = () => setRoute(parseRoute(location.hash));

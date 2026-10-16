@@ -17,10 +17,6 @@ export interface Config {
   sessionDays: number;
   /** Turn off request rate limits (tests only). */
   disableRateLimit: boolean;
-  /** Google AdSense publisher id (ca-pub-…). Ads stay off until it is set. */
-  adsenseClient?: string;
-  /** AdSense display ad unit id for the in-page ad slots. Without it only Auto ads (if enabled in AdSense) appear. */
-  adsenseSlot?: string;
 }
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
@@ -35,7 +31,5 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     webDist: env.WEB_DIST || undefined,
     sessionDays: Number(env.SESSION_DAYS ?? 30),
     disableRateLimit: env.DISABLE_RATE_LIMIT === 'true',
-    adsenseClient: /^ca-pub-\d{10,20}$/.test(env.ADSENSE_CLIENT ?? '') ? env.ADSENSE_CLIENT : undefined,
-    adsenseSlot: /^\d{5,20}$/.test(env.ADSENSE_SLOT ?? '') ? env.ADSENSE_SLOT : undefined,
   };
 }
