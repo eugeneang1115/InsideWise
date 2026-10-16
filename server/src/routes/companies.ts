@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { Db } from '../db.js';
 import { requireModerator, requireViewer } from '../auth.js';
 import { ApiError } from '../errors.js';
@@ -11,7 +11,8 @@ interface City { city: string; state: string; lat: number; lng: number }
 const CITIES: City[] = JSON.parse(readFileSync(new URL('../../seed/my-cities.json', import.meta.url), 'utf8'));
 const PALETTE = ['#42685c', '#a5664c', '#ab6d79', '#8b6a3e', '#4d6a86', '#6b6f3a', '#7a5c8c', '#3f7a74'];
 
-const SUBMIT_LIMIT = { config: { rateLimit: { max: 5, timeWindow: '1 hour' } } };
+// Counted per account, so people sharing an office or campus network don't use up each other's limit.
+const SUBMIT_LIMIT = { config: { rateLimit: { max: 5, timeWindow: '1 hour', keyGenerator: (req: FastifyRequest) => req.viewer?.id ?? req.ip } } };
 
 function slug(name: string) {
   const base = name.normalize('NFKD').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'company';

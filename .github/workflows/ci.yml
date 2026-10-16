@@ -32,7 +32,8 @@ jobs:
       - name: Start app with demo data
         run: |
           npm run seed:demo -w server
-          WEB_DIST=$PWD/web/dist MODERATOR_EMAILS=mod@example.test node server/dist/index.js &
+          # The browser tests sign in more often than the per-network sign-in limit allows.
+          DISABLE_RATE_LIMIT=true WEB_DIST=$PWD/web/dist MODERATOR_EMAILS=mod@example.test node server/dist/index.js &
           npx wait-on -t 30000 http://localhost:8787/api/health
       - run: npx playwright install --with-deps chromium
         working-directory: web

@@ -1,4 +1,4 @@
-import type { FastifyInstance } from 'fastify';
+import type { FastifyInstance, FastifyRequest } from 'fastify';
 import type { Db } from '../db.js';
 import { requireViewer } from '../auth.js';
 import { ApiError } from '../errors.js';
@@ -6,7 +6,8 @@ import { appealInput, reviewInput, reviewUpdate } from '../schemas.js';
 import { containsPersonalDetails } from '../security.js';
 import { uuidOrMissing } from './public.js';
 
-const SUBMIT_LIMIT = { config: { rateLimit: { max: 10, timeWindow: '1 hour' } } };
+// Counted per account, so people sharing an office or campus network don't use up each other's limit.
+const SUBMIT_LIMIT = { config: { rateLimit: { max: 10, timeWindow: '1 hour', keyGenerator: (req: FastifyRequest) => req.viewer?.id ?? req.ip } } };
 
 const OWN_COLUMNS = `r.id, r.company_id AS "companyId", c.name AS "companyName", r.status, r.employment, r.language,
   r.overall, r.pay, r.management, r.culture, r.growth, r.balance, r.title, r.pros, r.cons,
